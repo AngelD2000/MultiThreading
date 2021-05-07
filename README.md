@@ -1,5 +1,5 @@
 # Multi-Threaded Programming 
-In this assignment you will develop a multi-threaded application, written in C, that resolves domain names to IP addresses.  This is similar to the operation performed each time you access a new website in your web browser.  The application will utilize two types of worker threads: requesters and resolvers.  These threads communicate with each other using a shared array, also referred to as the bounded buffer. 
+In this assignment develop a multi-threaded application, written in C, that resolves domain names to IP addresses.  This is similar to the operation performed each time you access a new website in your web browser.  The application will utilize two types of worker threads: requesters and resolvers.  These threads communicate with each other using a shared array, also referred to as the bounded buffer. 
 
 ### Requester Threads
 The application will take an argument for the number of requester threads.  This pool of threads service a set of text files as input, each of which contains a list of hostnames.  Each name read should be placed on the shared array.  If a requester thread tries to write to the array but finds that it is full, it should block until a space opens up in the array. 
