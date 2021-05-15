@@ -15,9 +15,7 @@ Thread_arg *createThreadArgs(Queue *queue, char **argvDup, int pos, int totalFil
     arg -> numFileServiced = 0; 
     pthread_mutex_init(&arg -> argv_lock, NULL); 
     pthread_mutex_init(&arg -> readWrite_lock, NULL); 
-    pthread_mutex_init(&arg -> stderr_lock, NULL); 
-    pthread_mutex_init(&arg -> servPrint, NULL);
-    pthread_mutex_init(&arg -> resPrint, NULL);
+    pthread_mutex_init(&arg -> output_lock, NULL); 
     pthread_mutex_init(&arg -> serviceCount_lock, NULL);
     return arg; 
 }
@@ -35,7 +33,7 @@ void inputToBuffer(Thread_arg *arg, FILE *fp){
             }
             char *dest = (char *) malloc(MAX_NAME_LENGTH);
             if(dest == NULL){
-                OutputLog(ERROR("Dest failed to malloc"),&arg -> stderr_lock);
+                OutputLog(ERROR("Dest failed to malloc"),&arg -> output_lock);
                 exit(EXIT_FAILURE);
             }
             memcpy(dest, line, MAX_NAME_LENGTH);
@@ -43,7 +41,7 @@ void inputToBuffer(Thread_arg *arg, FILE *fp){
             OutputLog(fprintf(serviceFile, "%s\n",dest),&arg -> readWrite_lock);
         }
         else{
-            OutputLog(ERROR("Length of hostname is out of bounds. Moving on to the next hostname"),&arg -> stderr_lock);
+            OutputLog(ERROR("Length of hostname is out of bounds. Moving on to the next hostname"),&arg -> output_lock);
         }
     }
 }
@@ -65,7 +63,7 @@ void *requester(void *thread_args){
         if(count > arg -> totalFiles) break; 
         fp = fopen(arg -> argvDup[i], "r"); 
         if(fp == NULL){
-            OutputLog(fprintf(stderr,"invalid file <%s>\n",arg ->argvDup[i]),&arg -> stderr_lock);
+            OutputLog(fprintf(stderr,"invalid file <%s>\n",arg ->argvDup[i]),&arg -> output_lock);
         }
         else{
             inputToBuffer(arg, fp);
@@ -78,7 +76,7 @@ void *requester(void *thread_args){
             fclose(fp);
         }
     } 
-    OutputLog(fprintf(stdout,"thread <%lu> serviced %d files\n", pthread_self(), numFilesServiced),&arg -> servPrint);
+    OutputLog(fprintf(stdout,"thread <%lu> serviced %d files\n", pthread_self(), numFilesServiced),&arg -> output_lock);
     return 0;
 }
 
@@ -110,7 +108,7 @@ void *resolver(void *thread_args){
         }
         free(name);        
     }
-    OutputLog(fprintf(stdout,"thread <%lu> resolved %d hostnames\n", pthread_self(), numResolved),&arg -> resPrint);
+    OutputLog(fprintf(stdout,"thread <%lu> resolved %d hostnames\n", pthread_self(), numResolved),&arg -> output_lock);
     return 0;
 }
 
@@ -118,9 +116,7 @@ void *resolver(void *thread_args){
 void destroyThreadArgs(Thread_arg *arg){
     pthread_mutex_destroy(&arg -> argv_lock); 
     pthread_mutex_destroy(&arg -> readWrite_lock); 
-    pthread_mutex_destroy(&arg -> stderr_lock);
-    pthread_mutex_destroy(&arg -> servPrint);
-    pthread_mutex_destroy(&arg -> resPrint);
+    pthread_mutex_destroy(&arg -> output_lock); 
     pthread_mutex_destroy(&arg -> serviceCount_lock);
     free(arg);
 }
