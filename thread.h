@@ -18,9 +18,7 @@ struct Thread_arg{
     FILE *resolve_file;    
     pthread_mutex_t argv_lock; 
     pthread_mutex_t readWrite_lock;
-    pthread_mutex_t stderr_lock;
-    pthread_mutex_t servPrint; 
-    pthread_mutex_t resPrint; 
+    pthread_mutex_t output_lock;
     pthread_mutex_t serviceCount_lock; 
 };
 
