@@ -39,13 +39,6 @@ char *dequeue(Queue *queue){
     return node;
 }
 
-int queueSize(Queue *queue){
-    pthread_mutex_lock(&queue -> lock); 
-        int qSize = queue -> size; 
-    pthread_mutex_unlock(&queue -> lock); 
-    return qSize; 
-}
-
 //Destroy allocated Memory 
 void destroyQueue(Queue *queue){
     sem_destroy(&queue -> space_avil);

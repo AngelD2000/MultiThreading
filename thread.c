@@ -93,7 +93,7 @@ void *resolver(void *thread_args){
     while(1){
         pthread_mutex_lock(&arg -> serviceCount_lock); 
             countServFile = arg -> numFileServiced; 
-            qSize = queueSize(queue);
+            qSize = queue -> size;
         pthread_mutex_unlock(&arg -> serviceCount_lock);
 
         if((countServFile == arg ->totalFiles) && (qSize == 0) ) break; 

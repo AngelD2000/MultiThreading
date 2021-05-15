@@ -22,8 +22,6 @@ void enqueue(Queue *queue, char item[MAX_NAME_LENGTH]);
 //Dequeue
 char *dequeue(Queue *queue);
 
-int queueSize(Queue *queue);
-
 //Destroy allocatd memory
 void destroyQueue(Queue *queue); 
 
