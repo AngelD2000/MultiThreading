@@ -1,5 +1,7 @@
 #include "thread.h"
 
+//Should be simple branch
+
 Thread_arg *createThreadArgs(Queue *queue, char **argvDup, int pos, int totalFiles, FILE *serviceFile, FILE * resolveFile){
     Thread_arg *arg = (Thread_arg *)malloc(sizeof(Thread_arg)); 
     if(arg == NULL) {ERROR("Thread_arg failed to malloc"); exit(EXIT_FAILURE); }
