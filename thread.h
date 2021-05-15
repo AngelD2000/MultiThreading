@@ -5,6 +5,8 @@
 #include "multi-lookup.h"
 #include "util.h"
 
+#define OutputLog(S, lock){pthread_mutex_lock(lock); S; pthread_mutex_unlock(lock);}
+
 struct Thread_arg{
     Queue *queue; 
     char **argvDup;
