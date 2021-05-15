@@ -97,20 +97,18 @@ void *resolver(void *thread_args){
             countServFile = arg -> numFileServiced; 
             qSize = queueSize(queue);
         pthread_mutex_unlock(&arg -> serviceCount_lock);
+
         if((countServFile == arg ->totalFiles) && (qSize == 0) ) break; 
         char *name = dequeue(queue); 
         int flag = dnslookup(name, addressNum, MAX_IP_LENGTH);
-        pthread_mutex_lock(&arg -> readWrite_lock);
         if(flag == 0){
-            fprintf(resFile, "%s, %s\n", name, addressNum);
+            OutputLog(fprintf(resFile, "%s, %s\n", name, addressNum), &arg -> readWrite_lock);
             numResolved += 1; 
         }
         else{
-            fprintf(resFile, "%s, NOT_RESOLVED\n", name);
+            OutputLog( fprintf(resFile, "%s, NOT_RESOLVED\n", name), &arg -> readWrite_lock)
         }
-        free(name);
-        pthread_mutex_unlock(&arg -> readWrite_lock);
-       
+        free(name);        
     }
     OutputLog(fprintf(stdout,"thread <%lu> resolved %d hostnames\n", pthread_self(), numResolved),&arg -> resPrint);
     return 0;
