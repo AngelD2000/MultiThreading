@@ -45,7 +45,16 @@ int main(int argc, char **argv){
     pthread_t resPool[num_res_thread];
 
     Queue *queue = createQueue(); 
-    Thread_arg *arg = createThreadArgs(queue, argv, MIN_ARG , argc - MIN_ARG, service_file, resolve_file); 
+    Queue *fileQueue = createQueue(); 
+
+    Thread_arg *arg = createThreadArgs(queue, fileQueue, argc - MIN_ARG, service_file, resolve_file); 
+
+    //Insert the files into Queue? 
+    //How does this work? Normally if the queue is empty/full that particular thread gets
+    //blocked until the status is gone, but are we blocking the main thread here????
+    for(int k = MIN_ARG; k < argc; k++){
+        enqueue(fileQueue, argv[k]); 
+    }
 
     for(int i = 0; i < num_req_thread; i++){
         if(pthread_create(&reqPool[i], NULL, requester,(void *) arg)!=0) {

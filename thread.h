@@ -9,8 +9,7 @@
 
 struct Thread_arg{
     Queue *queue; 
-    char **argvDup;
-    int argvpos;
+    Queue *fileQueue; 
     int numAssigned; 
     int numFileServiced; 
     int totalFiles; 
@@ -23,7 +22,7 @@ struct Thread_arg{
 };
 
 typedef struct Thread_arg Thread_arg;
-Thread_arg *createThreadArgs(Queue *queue, char **argvDup, int argvPosition, int totalFiles, FILE *serFile, FILE *resFile);
+Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int totalFiles, FILE *serFile, FILE *resFile);
 
 void inputToBuffer(Thread_arg *argParam, FILE *fp);
 void *requester(void *args);
