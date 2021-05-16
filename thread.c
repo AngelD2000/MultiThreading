@@ -59,8 +59,8 @@ void *requester(void *thread_args){
         pthread_mutex_unlock(&arg -> argv_lock);
         if(count > arg -> totalFiles) break; 
 
-        char* filename = dequeue(fileq);
-        if(fp = fopen(*filename, "r")){
+        char *filename = dequeue(fileq);
+        if(fp = fopen(filename, "r")){
             //Do something
             inputToBuffer(arg, fp);
             numFilesServiced += 1;
@@ -70,7 +70,7 @@ void *requester(void *thread_args){
             fclose(fp);
         } 
         else{
-            OutputLog(fprintf(stderr,"invalid file <%s>\n", *filename),&arg -> output_lock);
+            OutputLog(fprintf(stderr,"invalid file <%s>\n", filename),&arg -> output_lock);
         }
     } 
     OutputLog(fprintf(stdout,"thread <%lu> serviced %d files\n", pthread_self(), numFilesServiced),&arg -> output_lock);
