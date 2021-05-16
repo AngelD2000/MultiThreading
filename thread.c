@@ -60,7 +60,7 @@ void *requester(void *thread_args){
         if(count > arg -> totalFiles) break; 
 
         char *filename = dequeue(fileq);
-        if(fp = fopen(filename, "r")){
+        if((fp = fopen(filename, "r"))){
             //Do something
             inputToBuffer(arg, fp);
             numFilesServiced += 1;
