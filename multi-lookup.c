@@ -80,6 +80,7 @@ int main(int argc, char **argv){
     fclose(resolve_file);
 
     destroyQueue(queue); 
+    destroyQueue(fileQueue);
     destroyThreadArgs(arg);
 
     gettimeofday(&end, NULL);
