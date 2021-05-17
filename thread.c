@@ -2,13 +2,14 @@
 
 //Should be simple branch
 
-Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int argc, char *argv, int totalFiles, FILE *serviceFile, FILE * resolveFile){
+Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int i, int argc, char *argv, int totalFiles, FILE *serviceFile, FILE * resolveFile){
     Thread_arg *arg = (Thread_arg *)malloc(sizeof(Thread_arg)); 
     if(arg == NULL) {ERROR("Thread_arg failed to malloc"); exit(EXIT_FAILURE); }
     arg -> queue = queue; 
     arg -> fileQueue = fileQueue; 
-    arg -> argcCopy = argc;
+    arg -> pos = i;
     arg -> argvCopy = argv; 
+    arg -> argcCopy = argc; 
     arg -> numAssigned = 0; 
     arg -> totalFilesServiced = 0;
     arg -> totalFiles = totalFiles; 
@@ -55,7 +56,12 @@ void *requester(void *thread_args){
     FILE *fp; 
     int fileServiced = 0;
     int count = 0;
-
+    int position = arg -> pos; 
+    char *argvD = arg -> argvCopy;
+    int argcD = arg -> argcCopy;
+    for(int i = position; i < argcD; i++){
+        enqueue(fileq, argvD[i]);
+    }
     while(1){
         pthread_mutex_lock(&arg -> argv_lock); 
             arg -> numAssigned++; 
