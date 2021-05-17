@@ -11,8 +11,10 @@ struct Thread_arg{
     Queue *queue; 
     Queue *fileQueue; 
     int numAssigned; 
-    int numFileServiced; 
+    int totalFilesServiced; 
     int totalFiles; 
+    int argcCopy; 
+    char *argvCopy; 
     FILE *service_file; 
     FILE *resolve_file;    
     pthread_mutex_t argv_lock; 
@@ -22,7 +24,7 @@ struct Thread_arg{
 };
 
 typedef struct Thread_arg Thread_arg;
-Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int totalFiles, FILE *serFile, FILE *resFile);
+Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int argc, char *argv, int totalFiles, FILE *serFile, FILE *resFile);
 
 void inputToBuffer(Thread_arg *argParam, FILE *fp);
 void *requester(void *args);

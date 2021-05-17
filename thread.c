@@ -2,22 +2,25 @@
 
 //Should be simple branch
 
-Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int totalFiles, FILE *serviceFile, FILE * resolveFile){
+Thread_arg *createThreadArgs(Queue *queue, Queue *fileQueue, int argc, char *argv, int totalFiles, FILE *serviceFile, FILE * resolveFile){
     Thread_arg *arg = (Thread_arg *)malloc(sizeof(Thread_arg)); 
     if(arg == NULL) {ERROR("Thread_arg failed to malloc"); exit(EXIT_FAILURE); }
     arg -> queue = queue; 
     arg -> fileQueue = fileQueue; 
+    arg -> argcCopy = argc;
+    arg -> argvCopy = argv; 
     arg -> numAssigned = 0; 
+    arg -> totalFilesServiced = 0;
     arg -> totalFiles = totalFiles; 
     arg -> service_file = serviceFile; 
-    arg -> resolve_file = resolveFile; 
-    arg -> numFileServiced = 0; 
+    arg -> resolve_file = resolveFile;  
     pthread_mutex_init(&arg -> argv_lock, NULL); 
     pthread_mutex_init(&arg -> readWrite_lock, NULL); 
     pthread_mutex_init(&arg -> output_lock, NULL); 
     pthread_mutex_init(&arg -> serviceCount_lock, NULL);
     return arg; 
 }
+
 
 void inputToBuffer(Thread_arg *arg, FILE *fp){
     Queue *queue = arg -> queue; 
@@ -50,8 +53,9 @@ void *requester(void *thread_args){
     Thread_arg *arg = (Thread_arg *)thread_args; 
     Queue *fileq = arg -> fileQueue;
     FILE *fp; 
-    int numFilesServiced = 0;
+    int fileServiced = 0;
     int count = 0;
+
     while(1){
         pthread_mutex_lock(&arg -> argv_lock); 
             arg -> numAssigned++; 
@@ -61,19 +65,20 @@ void *requester(void *thread_args){
 
         char *filename = dequeue(fileq);
         if((fp = fopen(filename, "r"))){
-            //Do something
             inputToBuffer(arg, fp);
-            numFilesServiced += 1;
-            pthread_mutex_lock(&arg -> serviceCount_lock); 
-                arg -> numFileServiced++; 
-            pthread_mutex_unlock(&arg -> serviceCount_lock);
             fclose(fp);
+
+            fileServiced += 1;
+            pthread_mutex_lock(&arg -> serviceCount_lock); 
+                arg -> totalFilesServiced++; 
+            pthread_mutex_unlock(&arg -> serviceCount_lock);
+            
         } 
         else{
             OutputLog(fprintf(stderr,"invalid file <%s>\n", filename),&arg -> output_lock);
         }
     } 
-    OutputLog(fprintf(stdout,"thread <%lu> serviced %d files\n", pthread_self(), numFilesServiced),&arg -> output_lock);
+    OutputLog(fprintf(stdout,"thread <%lu> serviced %d files\n", pthread_self(), fileServiced),&arg -> output_lock);
     return 0;
 }
 
@@ -89,7 +94,7 @@ void *resolver(void *thread_args){
     char addressNum[MAX_IP_LENGTH];
     while(1){
         pthread_mutex_lock(&arg -> serviceCount_lock); 
-            countServFile = arg -> numFileServiced; 
+            countServFile = arg -> totalFilesServiced; 
             qSize = queue -> size;
         pthread_mutex_unlock(&arg -> serviceCount_lock);
 
