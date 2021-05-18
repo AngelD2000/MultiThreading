@@ -90,10 +90,10 @@ void *resolver(void *thread_args){
     int countServFile = 0;
     char addressNum[MAX_IP_LENGTH];
     while(1){
-        pthread_mutex_lock(&arg -> serviceCount_lock); 
+        pthread_mutex_lock(&arg -> argv_lock); 
             countServFile = arg -> totalFilesServiced; 
             qSize = queue -> size;
-        pthread_mutex_unlock(&arg -> serviceCount_lock);
+        pthread_mutex_unlock(&arg -> argv_lock);
 
         if((countServFile == arg ->totalFiles) && (qSize == 0))  break; //Ask how to put in lock
         char *name = dequeue(queue); 
