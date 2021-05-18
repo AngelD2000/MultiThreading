@@ -47,7 +47,7 @@ int main(int argc, char **argv){
     Queue *queue = createQueue(); 
     Queue *fileQueue = createQueue(); 
 
-    Thread_arg *arg = createThreadArgs(queue, fileQueue, MIN_ARG,argc, argv, argc - MIN_ARG, service_file, resolve_file); 
+    Thread_arg *arg = createThreadArgs(queue, fileQueue, argc - MIN_ARG, service_file, resolve_file); 
 
     for(int i = 0; i < num_req_thread; i++){
         if(pthread_create(&reqPool[i], NULL, requester,(void *) arg)!=0) {
