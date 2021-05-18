@@ -61,6 +61,10 @@ int main(int argc, char **argv){
         }
     }
 
+    for(int k = MIN_ARG; k < argc;k++){
+        enqueue(fileQueue, argv[k]);
+    }
+
     for(int a = 0; a < num_req_thread; a++ ){
         pthread_join(reqPool[a], NULL); 
     }

@@ -59,8 +59,10 @@ void *requester(void *thread_args){
     int position = arg -> pos; 
     char *argvD = arg -> argvCopy;
     int argcD = arg -> argcCopy;
+    char *dest; 
     for(int i = position; i < argcD; i++){
-        enqueue(fileq, argvD[i]);
+        dest = argvD[i];
+        enqueue(fileq, dest);
     }
     while(1){
         pthread_mutex_lock(&arg -> argv_lock); 
@@ -73,6 +75,7 @@ void *requester(void *thread_args){
         if((fp = fopen(filename, "r"))){
             inputToBuffer(arg, fp);
             fclose(fp);
+            free(dest);
 
             fileServiced += 1;
             pthread_mutex_lock(&arg -> serviceCount_lock); 
